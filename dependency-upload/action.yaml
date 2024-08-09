@@ -1,0 +1,9 @@
+name: "dependency-upload"
+description: "Download and submit dependency graph"
+runs:
+  using: composite
+  steps:
+    - name: Download and submit dependency graph
+      uses: gradle/actions/dependency-submission@v3
+      with:
+        dependency-graph: download-and-submit # Download saved dependency-graph and submit

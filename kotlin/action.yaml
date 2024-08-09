@@ -1,0 +1,40 @@
+name: "kotlin"
+description: "Build and test the project"
+inputs:
+  snapshot-repo-url:
+    description: "The URL of the maven repository"
+    required: false
+  release-repo-url:
+    description: "The URL of the maven repository"
+    required: false
+  repo-username:
+    description: "The username for the maven repository"
+    required: false
+  repo-password:
+    description: "The password for the maven repository"
+    required: false
+  gradle-cache-encryption-key:
+    description: "The encryption key for the gradle cache"
+    required: false
+  tests:
+    description: "Whether to run tests"
+    required: false
+    default: "true"
+  java-version:
+    description: "The version of Java to use"
+    required: false
+    default: "11"
+runs:
+  using: composite
+  steps:
+    - uses: ./base/gradle
+      with:
+        snapshot-repo-url: ${{ inputs.snapshot-repo-url }}
+        release-repo-url: ${{ inputs.release-repo-url }}
+        repo-username: ${{ inputs.repo-username }}
+        repo-password: ${{ inputs.repo-password }}
+        gradle-cache-encryption-key: ${{ inputs.gradle-cache-encryption-key }}
+        tests: ${{ inputs.tests }}
+        java-version: ${{ inputs.java-version }}
+        tasks: "clean build publish"
+        extra-args: "-Pdeploy.kotlin=true -Pdeploy.native=false"

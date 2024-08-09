@@ -1,0 +1,82 @@
+name: "run-gradle"
+description: "Build and test the project"
+inputs:
+  snapshot-repo-url:
+    description: "The URL of the maven repository"
+    required: false
+  release-repo-url:
+    description: "The URL of the maven repository"
+    required: false
+  repo-username:
+    description: "The username for the maven repository"
+    required: false
+  repo-password:
+    description: "The password for the maven repository"
+    required: false
+  gradle-cache-encryption-key:
+    description: "The encryption key for the gradle cache"
+    required: false
+  tests:
+    description: "Whether to run tests"
+    required: false
+    default: "true"
+  java-version:
+    description: "The version of Java to use"
+    required: false
+    default: "11"
+  tasks:
+    description: "The gradle tasks to run"
+    required: false
+    default: "clean build"
+  extra-args:
+    description: "Extra arguments to pass to gradle"
+    required: false
+    default: ""
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK ${{ inputs.java-version }}
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: ${{ inputs.java-version }}
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        cache-encryption-key: ${{ inputs.gradle-cache-encryption-key }}
+        gradle-home-cache-cleanup: true
+        build-scan-publish: true
+        build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
+        build-scan-terms-of-use-agree: "yes"
+        add-job-summary-as-pr-comment: on-failure
+
+    - name: Set version to sha
+      id: vars
+      shell: bash
+      if: "github.event_name != 'release'"
+      run: echo "deploy_version=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+    - name: Set version to release
+      id: vars
+      shell: bash
+      if: "github.event_name == 'release'"
+      run: echo "deploy_version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+
+    - name: Run gradle tasks
+      shell: bash
+      if: "github.event_name != 'release'"
+      env:
+        MAVEN_REPO_URL: ${{ github.event_name == 'release' && inputs.release-repo-url || inputs.snapshot-repo-url }}
+        MAVEN_REPO_USERNAME: ${{ inputs.repo-username }}
+        MAVEN_REPO_PASSWORD: ${{ inputs.repo-password }}
+      run: ./gradlew ${{ inputs.tasks }} ${{ inputs.tests == 'true' && 'check' || '-x check -x test' }} -Pdeploy.version=${{ steps.vars.outputs.deploy_version }} ${{ inputs.extra-args }} --console=plain --info --configure-on-demand --parallel --build-cache --configuration-cache
+
+    - uses: actions/upload-artifact@v4
+      name: 'Upload reports'
+      if: always()
+      with:
+        name: reports
+        path: |
+          ./build/reports
+          ./**/build/reports
+        retention-days: ${{ github.event_name == 'release' && 365 || 7 }}
