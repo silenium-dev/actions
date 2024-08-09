@@ -78,4 +78,4 @@ runs:
         path: |
           ./build/reports
           ./**/build/reports
-        retention-days: ${{ github.event_name == 'release' && 365 || 7 }}
+        retention-days: ${{ github.event_name == 'release' && 90 || 7 }}
