@@ -75,7 +75,7 @@ runs:
       name: 'Upload reports'
       if: always()
       with:
-        name: reports
+        name: ${{ github.job }}-reports
         path: |
           ./build/reports
           ./**/build/reports
