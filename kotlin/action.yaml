@@ -27,7 +27,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: ./base/gradle
+    - uses: silenium-dev/actions/base/gradle
       with:
         snapshot-repo-url: ${{ inputs.snapshot-repo-url }}
         release-repo-url: ${{ inputs.release-repo-url }}

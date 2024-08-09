@@ -234,7 +234,7 @@ runs:
           $SUDO rm -f $(find /usr/local/cuda/ -name '*.a' -and -not -name libcudart_static.a -and -not -name libcudadevrt.a -and -not -name libnvcomp_device.a)
         fi
 
-    - uses: ./base/gradle
+    - uses: silenium-dev/actions/base/gradle@main
       with:
         snapshot-repo-url: ${{ inputs.snapshot-repo-url }}
         release-repo-url: ${{ inputs.release-repo-url }}
