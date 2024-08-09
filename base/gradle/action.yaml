@@ -64,7 +64,6 @@ runs:
 
     - name: Run gradle tasks
       shell: bash
-      if: "github.event_name != 'release'"
       env:
         MAVEN_REPO_URL: ${{ github.event_name == 'release' && inputs.release-repo-url || inputs.snapshot-repo-url }}
         MAVEN_REPO_USERNAME: ${{ inputs.repo-username }}
