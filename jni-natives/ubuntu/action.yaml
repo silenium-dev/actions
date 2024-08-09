@@ -244,4 +244,4 @@ runs:
         tests: ${{ inputs.tests }}
         java-version: ${{ inputs.java-version }}
         tasks: "clean build publish"
-        extra-args: "-Pdeploy.kotlin=false -Pdeploy.native=true -Pnative.platform=${{ inputs.platform }} ${{ inputs.extra-gradle-args }}"
+        extra-args: "-Pdeploy.kotlin=false -Pdeploy.native=true -Pdeploy.platform=${{ inputs.platform }} ${{ inputs.extra-gradle-args }}"
