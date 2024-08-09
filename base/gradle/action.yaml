@@ -52,12 +52,12 @@ runs:
         add-job-summary-as-pr-comment: on-failure
 
     - name: Set version to sha
-      id: vars
+      id: sha-vars
       shell: bash
       if: "github.event_name != 'release'"
       run: echo "deploy_version=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
     - name: Set version to release
-      id: vars
+      id: release-vars
       shell: bash
       if: "github.event_name == 'release'"
       run: echo "deploy_version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
