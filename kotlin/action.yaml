@@ -36,5 +36,5 @@ runs:
         gradle-cache-encryption-key: ${{ inputs.gradle-cache-encryption-key }}
         tests: ${{ inputs.tests }}
         java-version: ${{ inputs.java-version }}
-        tasks: "clean build publish"
+        tasks: "clean build ${{ github.event_name != 'pull_request' && 'publish' || '' }}"
         extra-args: "-Pdeploy.kotlin=true -Pdeploy.native=false"
