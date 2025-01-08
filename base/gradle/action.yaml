@@ -70,11 +70,16 @@ runs:
         MAVEN_REPO_PASSWORD: ${{ inputs.repo-password }}
       run: ./gradlew ${{ inputs.tasks }} ${{ inputs.tests == 'true' && 'check' || '-x check -x test' }} -Pdeploy.version=${{ steps.sha-vars.outputs.deploy_version || steps.release-vars.outputs.deploy_version }} ${{ inputs.extra-args }} --console=plain --info --configure-on-demand --parallel --build-cache --configuration-cache
 
+    - name: Generate a unique id
+      id: gen-id
+      if: always()
+      run: |
+        echo "rand=$(openssl rand -hex 3)" >> "$GITHUB_OUTPUT"
     - uses: actions/upload-artifact@v4
       name: 'Upload reports'
       if: always()
       with:
-        name: ${{ github.job }}-reports
+        name: ${{ github.job }}-${{ jobs.gen-id.outputs.rand }}-reports
         path: |
           ./build/reports
           ./**/build/reports
