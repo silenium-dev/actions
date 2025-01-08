@@ -72,6 +72,7 @@ runs:
 
     - name: Generate a unique id
       id: gen-id
+      shell: bash
       if: always()
       run: |
         echo "rand=$(openssl rand -hex 3)" >> "$GITHUB_OUTPUT"
@@ -79,7 +80,7 @@ runs:
       name: 'Upload reports'
       if: always()
       with:
-        name: ${{ github.job }}-${{ jobs.gen-id.outputs.rand }}-reports
+        name: ${{ github.job }}-${{ steps.gen-id.outputs.rand }}-reports
         path: |
           ./build/reports
           ./**/build/reports
