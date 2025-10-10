@@ -36,7 +36,7 @@ runs:
     - name: Setup C++ environment
       shell: bash
       run: |
-        apt-get install -y cmake ninja-build
+        sudo apt-get install -y cmake ninja-build
 
     - uses: silenium-dev/actions/base/gradle@main
       with:
