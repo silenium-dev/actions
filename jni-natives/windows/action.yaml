@@ -1,0 +1,53 @@
+name: "jni-natives-windows"
+description: "Build jni natives on windows"
+inputs:
+  snapshot-repo-url:
+    description: "The URL of the maven repository"
+    required: false
+  release-repo-url:
+    description: "The URL of the maven repository"
+    required: false
+  repo-username:
+    description: "The username for the maven repository"
+    required: false
+  repo-password:
+    description: "The password for the maven repository"
+    required: false
+  gradle-cache-encryption-key:
+    description: "The encryption key for the gradle cache"
+    required: false
+  tests:
+    description: "Whether to run tests"
+    required: false
+    default: "true"
+  java-version:
+    description: "The version of Java to use"
+    required: false
+    default: "11"
+  extra-gradle-args:
+    description: "Extra arguments to pass to gradle"
+    required: false
+  platform:
+    description: "The platform to build for"
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: "${{ inputs.platform == 'windows-x86_64' && 'x64' || (inputs.platform == 'windows-arm64' && 'amd64_arm64') }}"
+    - shell: bash
+      name: Remove GNU link (https://github.com/ilammy/msvc-dev-cmd#name-conflicts-with-shell-bash)
+      run: |
+        rm -f /usr/bin/link
+    - uses: silenium-dev/actions/base/gradle@main
+      with:
+        snapshot-repo-url: ${{ inputs.snapshot-repo-url }}
+        release-repo-url: ${{ inputs.release-repo-url }}
+        repo-username: ${{ inputs.repo-username }}
+        repo-password: ${{ inputs.repo-password }}
+        gradle-cache-encryption-key: ${{ inputs.gradle-cache-encryption-key }}
+        tests: ${{ inputs.tests }}
+        java-version: ${{ inputs.java-version }}
+        tasks: "clean build ${{ github.event_name != 'pull_request' && 'publish' || '' }}"
+        extra-args: "-Pdeploy.kotlin=false -Pdeploy.native=true -Pdeploy.platform=${{ inputs.platform }} ${{ inputs.extra-gradle-args }}"
