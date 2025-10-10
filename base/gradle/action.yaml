@@ -68,7 +68,7 @@ runs:
         MAVEN_REPO_URL: ${{ github.event_name == 'release' && inputs.release-repo-url || inputs.snapshot-repo-url }}
         MAVEN_REPO_USERNAME: ${{ inputs.repo-username }}
         MAVEN_REPO_PASSWORD: ${{ inputs.repo-password }}
-      run: ./gradlew ${{ inputs.tasks }} ${{ inputs.tests == 'true' && 'check' || '-x check -x test' }} -Pdeploy.version=${{ steps.sha-vars.outputs.deploy_version || steps.release-vars.outputs.deploy_version }} ${{ inputs.extra-args }} --console=plain --info --configure-on-demand --parallel --build-cache --configuration-cache
+      run: ./gradlew ${{ inputs.tasks }} ${{ inputs.tests == 'true' && 'check' || '-x check -x test' }} -Pdeploy.version=${{ steps.release-vars.outputs.deploy_version || steps.sha-vars.outputs.deploy_version }} ${{ inputs.extra-args }} --console=plain --info --configure-on-demand --parallel --build-cache --configuration-cache
 
     - name: Generate a unique id
       id: gen-id
