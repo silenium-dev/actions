@@ -33,11 +33,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Setup C++ environment
-      shell: bash
-      run: |
-        sudo apt-get install -y cmake ninja-build gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libstdc++-12-dev-arm64-cross
-
     - uses: silenium-dev/actions/base/gradle@main
       with:
         snapshot-repo-url: ${{ inputs.snapshot-repo-url }}
