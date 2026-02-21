@@ -42,7 +42,7 @@ runs:
     - name: configure shell
       id: shell-config
       env:
-        CONFIGURED_SHELL: ${{ inputs.use-nix-develop == 'true' && 'nix develop --ignore-env --keep MAVEN_REPO_URL --keep MAVEN_REPO_USERNAME --keep MAVEN_REPO_PASSWORD -c bash -e {0}' || 'bash -e {0}' }}
+        CONFIGURED_SHELL: ${{ inputs.use-nix-develop == 'true' && 'nix develop --ignore-env --keep-env-var MAVEN_REPO_URL --keep-env-var MAVEN_REPO_USERNAME --keep-env-var MAVEN_REPO_PASSWORD -c bash -e {0}' || 'bash -e {0}' }}
       shell: bash
       run: 'echo "shell=$CONFIGURED_SHELL" >> $GITHUB_OUTPUT'
     - name: Set up JDK ${{ inputs.java-version }}
