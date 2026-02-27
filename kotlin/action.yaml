@@ -24,10 +24,6 @@ inputs:
     description: "The version of Java to use"
     required: false
     default: "11"
-  use-nix-develop:
-    description: "Whether to use nix develop for the action"
-    required: false
-    default: "false"
 runs:
   using: composite
   steps:
@@ -40,6 +36,5 @@ runs:
         gradle-cache-encryption-key: ${{ inputs.gradle-cache-encryption-key }}
         tests: ${{ inputs.tests }}
         java-version: ${{ inputs.java-version }}
-        use-nix-develop: ${{ inputs.use-nix-develop }}
         tasks: "clean build ${{ github.event_name != 'pull_request' && 'publish' || '' }}"
         extra-args: "-Pdeploy.kotlin=true -Pdeploy.native=false"

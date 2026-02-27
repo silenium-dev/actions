@@ -32,22 +32,11 @@ inputs:
     description: "Extra arguments to pass to gradle"
     required: false
     default: ""
-  use-nix-develop:
-    description: "Whether to use nix develop for the action"
-    required: false
-    default: "false"
 runs:
   using: composite
   steps:
-    - name: configure shell
-      id: shell-config
-      env:
-        CONFIGURED_SHELL: ${{ inputs.use-nix-develop == 'true' && 'nix develop --keep MAVEN_REPO_URL --keep MAVEN_REPO_USERNAME --keep MAVEN_REPO_PASSWORD -c bash -e {0}' || 'bash -e {0}' }}
-      shell: bash
-      run: 'echo "shell=$CONFIGURED_SHELL" >> $GITHUB_OUTPUT'
     - name: Set up JDK ${{ inputs.java-version }}
       uses: actions/setup-java@v4
-      if: ${{ inputs.use-nix-develop != 'true' }}
       with:
         distribution: 'temurin'
         java-version: ${{ inputs.java-version }}
@@ -73,12 +62,12 @@ runs:
       run: echo "deploy_version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
 
     - name: Run gradle tasks
-      shell: ${{ steps.shell-config.outputs.shell }}
+      shell: bash
       env:
         MAVEN_REPO_URL: ${{ github.event_name == 'release' && inputs.release-repo-url || inputs.snapshot-repo-url }}
         MAVEN_REPO_USERNAME: ${{ inputs.repo-username }}
         MAVEN_REPO_PASSWORD: ${{ inputs.repo-password }}
-      run: ${{ inputs.use-nix-develop == 'true' && 'gradle' || './gradlew' }} ${{ inputs.tasks }} ${{ inputs.tests == 'true' && 'check' || '-x check -x test' }} -Pdeploy.version=${{ steps.release-vars.outputs.deploy_version || steps.sha-vars.outputs.deploy_version }} ${{ inputs.extra-args }} --console=plain --info --configure-on-demand --parallel --build-cache --configuration-cache
+      run: ./gradlew ${{ inputs.tasks }} ${{ inputs.tests == 'true' && 'check' || '-x check -x test' }} -Pdeploy.version=${{ steps.release-vars.outputs.deploy_version || steps.sha-vars.outputs.deploy_version }} ${{ inputs.extra-args }} --console=plain --info --configure-on-demand --parallel --build-cache --configuration-cache
 
     - name: Generate a unique id
       id: gen-id
